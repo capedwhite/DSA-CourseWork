@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.*;
 public class Question5b extends JFrame {
 
 
-    private static final String API_KEY = "96caa078cb05c25157f43a24770528dd";
+    private static final String API_KEY = System.getenv("WEATHER_API_KEY"); // Set your OpenWeatherMap API key here (or leave blank to use simulated data)
     private static final String BASE_URL =
         "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=metric";
 

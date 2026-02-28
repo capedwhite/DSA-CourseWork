@@ -10,13 +10,11 @@ public class Question4 {
 
     static final String[] DISTRICTS = {"District A", "District B", "District C"};
 
-    // Hourly demand [hour index 0=06:00 ... 17=23:00][district index]
-    // Hours 06-23 → 18 hours total
-    static final int HOUR_OFFSET = 6;   // hour 6 = index 0
-    static final int TOTAL_HOURS = 18;  // 06 through 23
 
-    // Demand table: rows = hours 06–23, cols = A, B, C
-    // Hours not listed use simple interpolated/constant values for demonstration.
+    static final int HOUR_OFFSET = 6;   
+    static final int TOTAL_HOURS = 18; 
+
+
     static int[][] demand = new int[TOTAL_HOURS][3];
 
     // Energy Sources
@@ -47,7 +45,6 @@ public class Question4 {
         for (int h = 0; h < TOTAL_HOURS; h++) {
             int hour = h + HOUR_OFFSET;
 
-            // Remaining capacity for each source this hour (reset each hour)
             double[] remaining = new double[3];
             for (int s = 0; s < 3; s++) {
                 remaining[s] = isAvailable(s, hour) ? MAX_CAPACITY[s] : 0;
@@ -97,8 +94,7 @@ public class Question4 {
     // INITIALIZE DEMAND DATA
 
     static void initDemand() {
-        // Realistic demand pattern for a city (kWh per district per hour)
-        // [hour index from 06][A, B, C]
+      
         int[][] data = {
             {20, 15, 25},  // 06
             {22, 16, 28},  // 07
@@ -194,54 +190,21 @@ public class Question4 {
         double renewPct  = (renewEnergy  / totalEnergy) * 100;
         double dieselPct = (dieselEnergy / totalEnergy) * 100;
 
-        System.out.printf("  ✅ Total Energy Distributed  : %.1f kWh%n", totalEnergy);
-        System.out.printf("  💰 Total Cost                : Rs. %.2f%n", totalCost);
-        System.out.printf("  🌿 Renewable Energy (Solar+Hydro): %.1f kWh (%.1f%%)%n", renewEnergy, renewPct);
-        System.out.printf("  🛢️  Diesel Energy Used        : %.1f kWh (%.1f%%)%n", dieselEnergy, dieselPct);
+        System.out.printf("  Total Energy Distributed  : %.1f kWh%n", totalEnergy);
+        System.out.printf("  Total Cost                : Rs. %.2f%n", totalCost);
+        System.out.printf("  Renewable Energy (Solar+Hydro): %.1f kWh (%.1f%%)%n", renewEnergy, renewPct);
+        System.out.printf("  Diesel Energy Used        : %.1f kWh (%.1f%%)%n", dieselEnergy, dieselPct);
 
-        System.out.println("\n  🛢️  HOURS/DISTRICTS WHERE DIESEL WAS USED:");
+        System.out.println("\n   HOURS/DISTRICTS WHERE DIESEL WAS USED:");
         if (dieselUsage.isEmpty()) {
             System.out.println("  None — all demand met by renewables!");
         } else {
             for (Map.Entry<String, List<String>> e : dieselUsage.entrySet()) {
                 System.out.printf("  Hour %-6s → %s%n", e.getKey(), String.join(", ", e.getValue()));
             }
-            System.out.println("\n  WHY DIESEL? Demand exceeded combined Solar + Hydro capacity.");
-            System.out.println("  Solar is unavailable after 18:00; Hydro alone (40 kWh/hr) cannot");
-            System.out.println("  cover peak evening demand (e.g. 113 kWh total at 19:00).");
         }
+         System.out.println("Trade-off: Greedy is fast (O(hours*districts*sources)) but may miss global optimum.");
 
-        System.out.println("\n  ⚙️  ALGORITHM EFFICIENCY & TRADE-OFFS:");
-        System.out.println("  • Greedy (cheapest-first): O(H × D × S log S) — very fast.");
-        System.out.println("    Always picks Solar→Hydro→Diesel, minimizing cost per hour.");
-        System.out.println("  • DP accumulates optimal cumulative cost across all hours.");
-        System.out.println("    Each hour's decision is locally optimal (greedy); the DP");
-        System.out.println("    layer tracks global cost trajectory without backtracking.");
-        System.out.println("  • Trade-off: greedy is not always globally optimal if source");
-        System.out.println("    capacity carries over hours, but since capacity resets each");
-        System.out.println("    hour, greedy IS optimal here.");
-        System.out.println("  • ±10% flexibility prevents unmet-demand failures during");
-        System.out.println("    capacity shortfalls without requiring load shedding.");
-        System.out.println("=".repeat(60));
 
-        // ─── Sample Descriptive Calculation for Hour 06 ───
-        System.out.println("\n📝 SAMPLE DESCRIPTIVE CALCULATION — HOUR 06");
-        System.out.println("-".repeat(60));
-        System.out.println("  Demand: A=20, B=15, C=25 → Total = 60 kWh");
-        System.out.println("  Available: Solar=50kWh@Rs.1.0, Hydro=40kWh@Rs.1.5, Diesel=N/A");
-        System.out.println();
-        System.out.println("  Step 1 — Solar (cheapest, 50 kWh):");
-        System.out.println("    Allocate A: 20 kWh → A fully met, Solar left = 30");
-        System.out.println("    Allocate B: 15 kWh → B fully met, Solar left = 15");
-        System.out.println("    Allocate C: 15 kWh → C partially met, Solar left = 0");
-        System.out.println("    Solar used: 50 kWh, Cost = Rs. 50.00");
-        System.out.println();
-        System.out.println("  Step 2 — Hydro (next cheapest, 40 kWh):");
-        System.out.println("    Remaining C demand = 10 kWh");
-        System.out.println("    Allocate C: 10 kWh → C fully met, Hydro left = 30");
-        System.out.println("    Hydro used: 10 kWh, Cost = Rs. 15.00");
-        System.out.println();
-        System.out.println("  Total Hour 06 Cost = Rs. 65.00 | All districts 100% fulfilled.");
-        System.out.println("-".repeat(60));
     }
 }

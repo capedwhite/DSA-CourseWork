@@ -1,13 +1,12 @@
-import javax.swing.*;
-import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
 public class Question5b extends JFrame {
 
@@ -33,7 +32,7 @@ public class Question5b extends JFrame {
         WeatherData(String city, String emoji) { this.city = city; this.emoji = emoji; }
     }
 
-    // ── GUI components ────────────────────────────────────────────
+
     private JButton           btnFetch, btnClear;
     private JLabel            lblStatus, lblSeqTime, lblParTime, lblSpeedup;
     private JProgressBar      progressBar;
@@ -48,7 +47,7 @@ public class Question5b extends JFrame {
     private final Object tableLock = new Object();
     private long seqLatency = 0, parLatency = 0;
 
-    // ── Constructor ───────────────────────────────────────────────
+
     public Question5b() {
         super("Multi-threaded Weather Collector — Nepal");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -61,7 +60,7 @@ public class Question5b extends JFrame {
         add(buildStatus(), BorderLayout.SOUTH);
     }
 
-    // ── Header ────────────────────────────────────────────────────
+
     private JPanel buildHeader() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBackground(new Color(235, 240, 255));
@@ -85,7 +84,7 @@ public class Question5b extends JFrame {
         return p;
     }
 
-    // ── Tabs ──────────────────────────────────────────────────────
+    // ── Tabs 
     private JTabbedPane buildTabs() {
         tabs = new JTabbedPane();
         tabs.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -99,7 +98,7 @@ public class Question5b extends JFrame {
         return tabs;
     }
 
-    // ── Weather tab ───────────────────────────────────────────────
+    // ── Weather tab 
     private JPanel buildWeatherTab() {
         JPanel p = new JPanel(new BorderLayout(0, 8));
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -149,7 +148,7 @@ public class Question5b extends JFrame {
         return p;
     }
 
-    // ── Chart tab ─────────────────────────────────────────────────
+
     private JPanel buildChartTab() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -158,7 +157,6 @@ public class Question5b extends JFrame {
         return p;
     }
 
-    // ── Log tab ───────────────────────────────────────────────────
     private JPanel buildLogTab() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -350,7 +348,7 @@ public class Question5b extends JFrame {
         }
     }
 
-    // ── Simple bar chart (same logic, less code) ──────────────────
+    // ── Simple bar chart 
     static class ChartPanel extends JPanel {
         private long seqTotal = 0, parTotal = 0;
         private List<WeatherData> seqData = new ArrayList<>(), parData = new ArrayList<>();
@@ -376,7 +374,7 @@ public class Question5b extends JFrame {
             Color cSeq = new Color(220, 80,  80);
             Color cPar = new Color(60,  180, 100);
 
-            // ── Top: total bars ───────────────────────────────────
+            // ── Top: total bars 
             int topBot = H / 2 - 20;
             int availH = topBot - 60;
             long maxV  = Math.max(seqTotal, parTotal);

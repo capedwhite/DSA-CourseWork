@@ -5,11 +5,12 @@ import java.util.List;
 
 public class Question5a extends JFrame {
 
+    // Represents a single tourist spot with its details
     static class Spot {
         String name;
         double lat, lon;
         int fee;
-        int openMin, closeMin;
+        int openMin, closeMin;//minutes from 00:00
         Set<String> tags;
 
         Spot(String name, double lat, double lon, int fee, String open, String close, String... tags) {
@@ -30,7 +31,7 @@ public class Question5a extends JFrame {
     private final JTextArea output = new JTextArea(12, 40);
     private final PlotPanel plotPanel = new PlotPanel();
 
-    private final List<Spot> spots = sampleSpots();
+    private final List<Spot> spots = sampleSpots();// Pre-loaded list of tourist spots
 
     public Question5a() {
         super("Tourist Spot Optimizer");
@@ -85,6 +86,7 @@ public class Question5a extends JFrame {
         }
         top.add(tagPanel);
 
+// --- Button to trigger itinerary generation ---
        
         JButton run = new JButton("Suggest Itinerary");
         run.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -117,16 +119,18 @@ public class Question5a extends JFrame {
     }
 
  
-
+ // Main method called when the user clicks "Suggest Itinerary"
     private void solve() {
         int timeHours = Integer.parseInt(timeHoursField.getText().trim());
         int budget    = Integer.parseInt(budgetField.getText().trim());
+         // Collect selected interest tags; if none selected, use all tags
         Set<String> interests = new HashSet<>();
         for (int i = 0; i < ALL_TAGS.length; i++)
             if (tagBoxes[i].isSelected()) interests.add(ALL_TAGS[i]);
         if (interests.isEmpty()) interests.addAll(Arrays.asList(ALL_TAGS)); // fallback: all
-
+  // Greedy approach: fast, picks best-scoring spot at each step
         List<Spot> heuristic = greedyRoute(spots, timeHours, budget, interests);
+         // Brute force approach: checks all permutations but limited to top 6 spots
         List<Spot> top = topCandidates(spots, interests, 6);
         List<Spot> optimal = bruteForceBest(top, timeHours, budget, interests);
 
@@ -136,7 +140,7 @@ public class Question5a extends JFrame {
 
         output.append("\nBrute force (on <=6 spots):\n");
         printRoute(optimal, interests);
-
+ // Update the map visualization with the heuristic route
         plotPanel.setRoute(heuristic);
         plotPanel.repaint();
     }
@@ -153,7 +157,7 @@ public class Question5a extends JFrame {
         }
         output.append(String.format("Total fee: %d | Approx distance: %.3f\n", totalFee, dist));
     }
-
+ // Greedy algorithm: at each step, pick the nearby spot with the best score
     private List<Spot> greedyRoute(List<Spot> all, int timeHours, int budget, Set<String> interests) {
         List<Spot> remaining = new ArrayList<>(all);
         List<Spot> route = new ArrayList<>();
@@ -184,7 +188,7 @@ public class Question5a extends JFrame {
         }
         return route;
     }
-
+ // Brute force: tries every possible ordering of spots and picks the highest-scoring valid route
     private List<Spot> bruteForceBest(List<Spot> small, int timeHours, int budget, Set<String> interests) {
         List<Spot> bestRoute = new ArrayList<>();
         double bestScore = Double.NEGATIVE_INFINITY;
@@ -201,7 +205,7 @@ public class Question5a extends JFrame {
         }
         return bestRoute;
     }
-
+ // Validates a candidate route against time and budget; returns its score or null if invalid
     private Double evaluateIfValid(List<Spot> route, int timeHours, int budget, Set<String> interests) {
         int fee = 0, minutes = timeHours * 60, used = 0;
         Spot prev = null; int matchSum = 0; double dist = 0;
@@ -215,7 +219,7 @@ public class Question5a extends JFrame {
         }
         return matchSum * 10 - dist - (fee / 200.0);
     }
-
+    // Counts how many of the user's interest tags match a spot's tags
     private static int interestMatch(Spot s, Set<String> interests) {
         int c = 0; for (String t : interests) if (s.tags.contains(t)) c++; return c;
     }
@@ -245,6 +249,7 @@ public class Question5a extends JFrame {
             Collections.swap(a, i, j); permute(a, i+1, res); Collections.swap(a, i, j);
         }
     }
+        // Sample dataset: a few Kathmandu tourist spots with fees, hours, and tags
     private static List<Spot> sampleSpots() {
         return List.of(
             new Spot("Pashupatinath Temple",   27.7104, 85.3488, 100, "06:00","18:00","culture","religious"),
@@ -304,6 +309,7 @@ public class Question5a extends JFrame {
     }
 
     public static void main(String[] args) {
+           // Launch the GUI on the Event Dispatch Thread (Swing thread safety)
         SwingUtilities.invokeLater(() -> new Question5a().setVisible(true));
     }
 }
